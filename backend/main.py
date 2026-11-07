@@ -227,7 +227,8 @@ async def redteam(body: RedTeamIn):
         m = _re.search(r"\{.*\}", result["content"], _re.S)
         tests = _json.loads(m.group(0))["tests"]
         tests = [t for t in tests if t.get("input") and t.get("category") in judge.RUBRICS][:n]
-        assert tests
+        if not tests:
+            raise ValueError("no valid tests generated")
     except Exception:
         raise HTTPException(502, "red-team output could not be parsed")
     suite_id = "redteam-" + uuid.uuid4().hex[:8]
